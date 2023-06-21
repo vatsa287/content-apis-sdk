@@ -82,9 +82,9 @@ class Connection(ConnectionBase):
         return Region.create(self, name, address)
 
 
-    def create_folder(self, name, region="", immutable=False, version=False, lock=False, template=None):
-        """ Create a new Folder """
-        return Folder.create(self, name, region, immutable, version, lock, template)
+    def create_bucket(self, name, region="", immutable=False, version=False, lock=False, template=None):
+        """ Create a new bucket """
+        return Bucket.create(self, name, region, immutable, version, lock, template)
 
 
     def list_folders(self):
@@ -100,11 +100,6 @@ class Connection(ConnectionBase):
         """ Create default("/") object """
         return Document.create(self, "/", path, data, object_type, immutable, version, lock, template)
 
-    # TODO: Add path to `upload_object`
-    def upload_object(self, file_path, object_type, path="", immutable=False, version=False, lock=False, template=None):
-        """ Create default("/") object """
-        return Document.upload(self, "/", file_path, object_type, path, immutable, version, lock, template)
-
 
     def list_objects(self):
         """ List all default("/") objects """
@@ -119,11 +114,6 @@ class Connection(ConnectionBase):
     def create_template(self, name, content, template_type, output_type="text", public=False):
         """ Create Template """
         return Template.create(self, name, content, template_type, output_type, public)
-
-
-    def upload_template(self, file_path, template_type, name="", output_type="text", public=False):
-        """ Upload Template """
-        return Template.upload(self, file_path, template_type, name, output_type, public)
 
 
     def list_templates(self):
