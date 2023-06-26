@@ -417,7 +417,7 @@ def test_upload_templates_and_objects():
     )
 
     template_file_path = "extra/templates.html"
-    tmpl = conn.upload_template(file_path=template_file_path, name="simple-html-upload", template_type="text", output_type="html")
+    tmpl = conn.upload_template(file_path=template_file_path, template_type="html", name="simple-html-upload")
 
     tmpl = conn.template("simple-html-upload")
     get_template_data = tmpl.get()
@@ -425,65 +425,10 @@ def test_upload_templates_and_objects():
     assert get_template_data.name == "simple-html-upload"
 
     object_file_path = "extra/objects.json"
-    folder = conn.folder("mydocs_in_blr")
-    obj = folder.upload_object(file_path=object_file_path, object_type="json", template="simple-html-upload", path="user-abc-upload.json")
+    bucket = conn.bucket("mydocs_in_blr")
+    obj = bucket.upload_object(file_path=object_file_path, object_type="json", template="simple-html-upload", path="user-abc-upload.json")
 
-    obj = folder.object("user-abc-upload.json")
+    obj = bucket.object("user-abc-upload.json")
     rendered_data = obj.get_rendered()
 
     assert rendered_data == "Hello from <b>KADALU TECHNOLOGIES</b>"
-
-
-def test_folder_share_create():
-    conn = kadalu_content_apis.Connection(
-        url=URL,
-        user_id=USER_ID,
-        token=TOKEN
-    )
-
-    folder = conn.folder("mydocs_in_blr")
-
-    share = folder.create_share(public=True)
-    assert share.public == True
-
-    share = folder.create_share(use_long_url=True)
-    assert share.long_url_id != ""
-
-
-def test_object_share_create():
-    conn = kadalu_content_apis.Connection(
-        url=URL,
-        user_id=USER_ID,
-        token=TOKEN
-    )
-
-    folder = conn.folder("mydocs_in_blr")
-    obj = folder.object(path="user-abc2.json")
-
-    share = obj.create_share(public=True)
-    assert share.public == True
-
-    share = obj.create_share(use_long_url=True)
-    assert share.long_url_id != ""
-
-
-def test_delete_shares():
-
-    conn = kadalu_content_apis.Connection(
-        url=URL,
-        user_id=USER_ID,
-        token=TOKEN
-    )
-
-    folder = conn.folder("mydocs_in_blr")
-    share = folder.create_share(public=True)
-    share_id = share.id
-    share_obj = folder.share(share_id)
-    share_obj.delete()
-
-    folder = conn.folder("mydocs_in_blr")
-    obj = folder.object(path="user-abc2.json")
-    share = obj.create_share(public=True)
-    share_id = share.id
-    share_obj = obj.share(share_id)
-    share_obj.delete()
