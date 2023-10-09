@@ -18,13 +18,8 @@ class Document(Generic):
 
 
     @classmethod
-<<<<<<< HEAD
-    def create(cls, conn, folder_name, path, data, object_type, immutable, version, lock, template):
-        """ Create object of both default("/") and with folder-name """
-=======
     def create(cls, conn, bucket_name, path, data, object_type, immutable, version, lock, template):
         """ Create object of both default("/") and with bucket-name """
->>>>>>> python: Add get_rendered()
 
         folder_name = folder_name.lstrip("/")
         if folder_name == "":
@@ -87,14 +82,14 @@ class Document(Generic):
 
 
     @classmethod
-    def list(cls, conn, folder_name):
+    def list(cls, conn, folder_name, page, page_size):
         """ List object(s) of both default("/") and with folder-name """
 
         folder_name = folder_name.lstrip("/")
         if folder_name == "":
-            url = f"{conn.url}/api/objects"
+            url = f"{conn.url}/api/objects?page={page}&page_size={page_size}"
         else:
-            url = f"{conn.url}/api/folders/{folder_name}/objects"
+            url = f"{conn.url}/api/folders/{folder_name}/objects?page={page}&page_size={page_size}"
 
         resp = conn.http_get(url)
         objects = response_object_or_error(Document, resp, 200)
@@ -128,11 +123,7 @@ class Document(Generic):
 
     # TODO: Check for response once Object Update API is implemented
     def update(self, path=None, data=None, object_type=None, template=None):
-<<<<<<< HEAD
-        """ Update object of both default("/") and with folder-name """
-=======
         """ Update object of both default("/") and with bucket-name """
->>>>>>> python: Add get_rendered()
 
         folder_name = self.folder_name.lstrip("/")
         if folder_name == "":
@@ -185,4 +176,19 @@ class Document(Generic):
         # return response_object_or_error("Object", resp, 200)
         if resp.status != 200:
             raise APIError(resp)
-        return resp.data
+        return str(resp.data, 'utf-8')
+
+
+    def create_share(self, public=False, use_long_url=False, password="", use_token=False, disable=False, role=""):
+        """ Create Share with folder name and object path"""
+        return Share.create(self.conn, self.folder_name, self.path, public, use_long_url, password, use_token, disable, role)
+
+
+    def list_shares(self, page=1, page_size=30):
+        """ List all Shares within a folder """
+        return Share.list(self.conn, self.folder_name, self.path, page=1, page_size=30)
+
+
+    def share(self, share_id):
+        """ Return a Share instance """
+        return Share(self.conn, self.folder_name, self.path, share_id)

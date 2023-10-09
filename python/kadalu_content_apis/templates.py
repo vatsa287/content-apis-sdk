@@ -60,11 +60,11 @@ class Template(Generic):
         return outdata
 
     @classmethod
-    def list_templates(cls, conn):
+    def list_templates(cls, conn, page=1, page_size=30):
         """ List all templates """
 
         resp = conn.http_get(
-            f"{conn.url}/api/templates"
+            f"{conn.url}/api/templates?page={page}&page_size={page_size}"
         )
         templates = response_object_or_error(Template, resp, 200)
 
